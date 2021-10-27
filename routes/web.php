@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -79,4 +80,15 @@ Route::name('author.')->middleware('auth')->group(function () {
 
 Route::name('user.')->middleware('auth')->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.view');
+});
+
+
+/*
+ * Comment routes
+ */
+
+Route::name('comment.')->middleware('auth')->group(function () {
+    Route::post('/addComment', [CommentController::class, 'store'])->name('create');
+
+    Route::get('/deleteComment', [CommentController::class, 'delete'])->name('delete');
 });

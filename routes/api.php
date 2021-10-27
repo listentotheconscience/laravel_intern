@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -41,3 +42,12 @@ Route::name('api.author.')->middleware('auth:api')->group(function () {
 Route::name('api.user.')->middleware('auth:api')->group(function () {
     Route::get('profile', [UserController::class, 'apiProfile'])->name('profile');
 });
+
+Route::name('api.comment.')->middleware('auth:api')->group(function () {
+    Route::post('/addComment', [CommentController::class, 'apiStore'])->name('create');
+
+    Route::post('/deleteComment', [CommentController::class, 'apiDelete'])->name('delete');
+
+    Route::get('/showComments', [CommentController::class, 'apiShowComments'])->name('show');
+});
+

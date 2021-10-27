@@ -9,6 +9,7 @@ use App\Http\Requests\PostGetByIdRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Author;
+use App\Models\Comment;
 use App\Models\Post;
 
 class PostController extends BaseController
@@ -50,8 +51,9 @@ class PostController extends BaseController
     public function getByHash(PostGetByHashRequest $request)
     {
         $post = Post::where('hashed_link', $request->hash)->first();
+        $comments = Comment::where('post_id', $post->id)->orderBy('created_at','desc')->paginate(5);
 
-        return view('item')->with('title', $post->title)->with('post', $post);
+        return view('item')->with('title', $post->title)->with('post', $post)->with('comments', $comments);
     }
 
     public function apiGetAll()
