@@ -32,15 +32,24 @@
         </form>
         <hr>
         @forelse($comments as $comment)
-            <div class="row md-col-12">
-                <p class="md-col-3">Author username: {{ \App\Models\User::find($comment->author_id)->name }}</p>
-                <p class="md-col-3">Text: {{ $comment->text }}</p>
-                @if(\Illuminate\Support\Facades\Auth::user()->id == $comment->author_id)
-                    <a class="col-1 btn btn-primary" href="{{ route('comment.delete', ['id' => $comment->id]) }}">Delete</a>
-                @endif
-            </div>
-            <br />
-            <hr/>
+            @if($comment->commentable_type == 'App\\Models\\Author')
+                <div class="row md-col-12">
+                    <p style="color: darkcyan" class="md-col-3">Author username: {{ \App\Models\Author::find($comment->commentable_id)->name }}</p>
+                    <p style="color: darkcyan" class="md-col-3">Text: {{ $comment->text }}</p>
+                </div>
+                <br />
+                <hr/>
+            @else
+                <div class="row md-col-12">
+                    <p class="md-col-3">Author username: {{ \App\Models\User::find($comment->author_id)->name }}</p>
+                    <p class="md-col-3">Text: {{ $comment->text }}</p>
+                    @if(\Illuminate\Support\Facades\Auth::user()->id == $comment->author_id)
+                        <a class="col-1 btn btn-primary" href="{{ route('comment.delete', ['id' => $comment->id]) }}">Delete</a>
+                    @endif
+                </div>
+                <br />
+                <hr/>
+            @endif
         @empty
             <p>No comments!</p>
         @endforelse

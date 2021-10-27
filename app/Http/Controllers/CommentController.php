@@ -5,16 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CommentCreateRequest;
 use App\Http\Requests\CommentDeleteRequest;
 use App\Http\Requests\CommentShowRequest;
+use App\Models\Author;
 use App\Models\Comment;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends BaseController
 {
     public function store(CommentCreateRequest $request)
     {
         Comment::create([
-           'text' => $request->text,
-           'author_id' => $request->author_id,
-           'post_id' => $request->post_id
+            'text' => $request->text,
+            'author_id' => $request->author_id,
+            'post_id' => $request->post_id,
+            'commentable_type' => User::class,
+            'commentable_id' => Auth::user()->id,
         ]);
 
         return redirect()->back();
@@ -29,12 +35,26 @@ class CommentController extends BaseController
 
     public function apiStore(CommentCreateRequest $request)
     {
-        $data = Comment::create([
-            'text' => $request->text,
-            'author_id' => $request->author_id,
-            'post_id' => $request->post_id
-        ]);
-
+        if (Auth::guest())
+        {
+            $data = Comment::create([
+                'text' => $request->text,
+                'author_id' => $request->author_id,
+                'post_id' => $request->post_id,
+                'commentable_type' => Author::class,
+                'commentable_id' => Post::find($request->post_id)->author_id
+            ]);
+        }
+        else
+        {
+            $data = Comment::create([
+                'text' => $request->text,
+                'author_id' => $request->author_id,
+                'post_id' => $request->post_id,
+                'commentable_type' => User::class,
+                'commentable_id' => Auth::user()->id
+            ]);
+        }
         return $this->sendResponse($data, "OK");
     }
 

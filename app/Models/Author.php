@@ -10,4 +10,9 @@ class Author extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }

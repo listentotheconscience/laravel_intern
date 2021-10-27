@@ -8,6 +8,7 @@ use App\Http\Requests\PostGetByHashRequest;
 use App\Http\Requests\PostGetByIdRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostWithCommentsResource;
 use App\Models\Author;
 use App\Models\Comment;
 use App\Models\Post;
@@ -93,7 +94,7 @@ class PostController extends BaseController
     public function apiGetByHash(PostGetByHashRequest $request)
     {
         return $this->sendResponse(
-            new PostResource(Post::where('hashed_link', $request->hash)->first()), "OK"
+            new PostWithCommentsResource(Post::where('hashed_link', $request->hash)->first()), "OK"
         );
     }
 }
