@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
-use App\Models\User;
+use App\Repositories\UserRepository;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class AuthController extends BaseController
 {
+
+    public function __construct()
+    {
+        $this->repository = new UserRepository();
+    }
+
     public function login(AuthLoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
@@ -27,14 +33,14 @@ class AuthController extends BaseController
     {
         $path = $request->image->store('images');
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'avatar' => $path
-        ]);
+        $this->repository->store(
+            $request->name,
+            $request->email,
+            $request->password,
+            $path
+        );
 
-        return redirect('/login');
+        return redirect('/email/verify');
     }
 
     public function logout()
@@ -43,5 +49,19 @@ class AuthController extends BaseController
         Auth::logout();
 
         return redirect('/login');
+    }
+
+    public function verification(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return redirect('/');
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        $request->user()->sendEmailVerificationNotification();
+
+        return redirect('/');
     }
 }

@@ -9,24 +9,29 @@ use App\Http\Resources\AuthorResource;
 use App\Http\Resources\PostResource;
 use App\Models\Author;
 use App\Models\Post;
+use App\Repositories\AuthorRepository;
+use App\Services\PostService;
 
 class AuthorController extends BaseController
 {
+    public function __construct()
+    {
+        $this->repository = new AuthorRepository();
+        $this->posts = new PostService();
+    }
+
     public function store(CreateAuthorRequest $request)
     {
         $path = $request->image->store('images');
 
-        Author::create([
-            'name' => $request->name,
-            'avatar' => $path
-        ]);
+        $this->repository->store($request->name, $path);
 
         return redirect('/authors');
     }
 
     public function getAll()
     {
-        $data = Author::paginate(7);
+        $data = $this->repository->paginate(7);
 
         return view('authors')->with('authors', $data)->with('title', 'Authors');
     }
@@ -34,14 +39,16 @@ class AuthorController extends BaseController
 
     public function getById(AuthorGetByIdRequest $request)
     {
-        $data = Author::find($request->id);
-        $posts = Post::where('author_id', '=', $data->id)->paginate(5);
+        $data = $this->repository->getById($request->id);
+
+        $posts = $this->posts->getAllPostsByAuthorWithPagination($data->id, 5);
+
         return view('author')->with('author', $data)->with('title', $data->name)->with('posts', $posts);
     }
 
     public function apiGetAll()
     {
-        $data = Author::all();
+        $data = $this->repository->all();
 
         if ($data->isEmpty()) {
             return $this->sendError('List is empty');
@@ -54,18 +61,16 @@ class AuthorController extends BaseController
     {
         $path = $request->image->store('images');
 
-        $data = Author::create([
-            'name' => $request->name,
-            'avatar' => $path
-        ]);
+        $data = $this->repository->store($request->name, $path);
 
         return $this->sendResponse($data, 'OK');
     }
 
     public function apiGetById(AuthorGetByIdRequest $request)
     {
-        $data = Author::find($request->id);
-        $posts = Post::where('author_id', '=', $data->id)->get();
+        $data = $this->repository->getById($request->id);
+
+        $posts = $this->posts->getAllPostsByAuthorWithPagination($data->id, 5);
 
         if ($posts->isEmpty()) {
             return $this->sendError('List is empty');

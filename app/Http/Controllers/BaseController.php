@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Hash;
 
-class BaseController extends Controller
+abstract class BaseController extends Controller
 {
+    protected $repository;
+
     public function sendResponse($result, $message)
     {
         $response = [

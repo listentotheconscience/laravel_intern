@@ -2,6 +2,10 @@
 
 namespace App\Console;
 
+use App\Jobs\PostAuthorShuffle;
+use App\Models\Author;
+use App\Models\Post;
+use App\Repositories\AuthorRepository;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,7 +28,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->job(new PostAuthorShuffle)->everyMinute()
+          ->description('Post\'s author shuffle');
     }
 
     /**

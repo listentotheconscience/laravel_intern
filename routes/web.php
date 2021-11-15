@@ -45,7 +45,7 @@ Route::name('auth.')->group(function () {
  * Post routes
  */
 
-Route::name('post.')->middleware('auth')->group(function () {
+Route::name('post.')->group(function () {
     Route::get('/posts', [PostController::class, 'getAll'])->name('all');
 
     Route::get('/create_post', [PostController::class, 'createPost'])->name('create.view');
@@ -62,7 +62,7 @@ Route::name('post.')->middleware('auth')->group(function () {
  * Authors routes
  */
 
-Route::name('author.')->middleware('auth')->group(function () {
+Route::name('author.')->middleware('verified')->group(function () {
     Route::get('/authors', [AuthorController::class, 'getAll'])->name('all');
 
     Route::get('/create_author', function () {
@@ -78,17 +78,31 @@ Route::name('author.')->middleware('auth')->group(function () {
  * User routes
  */
 
-Route::name('user.')->middleware('auth')->group(function () {
+Route::name('user.')->middleware('verified')->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.view');
 });
-
 
 /*
  * Comment routes
  */
 
-Route::name('comment.')->middleware('auth')->group(function () {
+Route::name('comment.')->middleware('verified')->group(function () {
     Route::post('/addComment', [CommentController::class, 'store'])->name('create');
 
     Route::get('/deleteComment', [CommentController::class, 'delete'])->name('delete');
 });
+
+
+/*
+ * Verification routes
+ */
+
+Route::get('/email/verify', function () {
+    return view('verifyemail')->with('title', 'Email Verification');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verification'])
+    ->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', [AuthController::class, 'sendVerificationEmail'])
+    ->middleware(['auth', 'throttle:6,1'])->name('verification.send');

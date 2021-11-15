@@ -15,4 +15,18 @@ class Comment extends Model
     {
         return $this->morphTo();
     }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id', 'id');
+    }
+
+    public function authors()
+    {
+        return $this->morphedByMany(Author::class, 'commentable');
+    }
+    public function users()
+    {
+        return $this->morphedByMany(User::class, 'commentable');
+    }
 }

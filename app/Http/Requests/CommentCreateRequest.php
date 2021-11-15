@@ -26,7 +26,8 @@ class CommentCreateRequest extends FormRequest
         return [
             'text' => 'required',
             'author_id' => 'required|integer|exists:users,id',
-            'post_id' => 'required|integer|exists:posts,id'
+            'post_id' => 'required|integer|exists:posts,id',
+            'parent_id' => 'integer|exists:comments,id'
         ];
     }
 }

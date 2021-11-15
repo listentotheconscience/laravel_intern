@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Author;
+use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
@@ -27,9 +30,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
-        Relation::enforceMorphMap([
-            'post' => 'App\Models\Post',
-            'comment' => 'App\Models\Comment'
+        Relation::morphMap([
+            'users' => User::class,
+            'authors' => Author::class,
+            'comments' => Comment::class
         ]);
     }
 }

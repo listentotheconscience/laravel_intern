@@ -20,7 +20,8 @@ class CommentController extends BaseController
             'author_id' => $request->author_id,
             'post_id' => $request->post_id,
             'commentable_type' => User::class,
-            'commentable_id' => Auth::user()->id,
+            'commentable_id' => Auth::id(),
+            'parent_id' => $request->parent_id
         ]);
 
         return redirect()->back();
@@ -42,7 +43,8 @@ class CommentController extends BaseController
                 'author_id' => $request->author_id,
                 'post_id' => $request->post_id,
                 'commentable_type' => Author::class,
-                'commentable_id' => Post::find($request->post_id)->author_id
+                'commentable_id' => Post::find($request->post_id)->author_id,
+                'parent_id' => $request->parent_id
             ]);
         }
         else
@@ -52,7 +54,8 @@ class CommentController extends BaseController
                 'author_id' => $request->author_id,
                 'post_id' => $request->post_id,
                 'commentable_type' => User::class,
-                'commentable_id' => Auth::user()->id
+                'commentable_id' => Auth::user()->id,
+                'parent_id' => $request->parent_id
             ]);
         }
         return $this->sendResponse($data, "OK");

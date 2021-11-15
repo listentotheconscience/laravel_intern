@@ -15,4 +15,5 @@ class Author extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
 }

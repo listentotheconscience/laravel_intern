@@ -14,7 +14,6 @@ class AddLinkToPostsTable extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-//            $table->unsignedBigInteger('author_id');
             $table->foreignId('author_id')->constrained('authors');
         });
     }
